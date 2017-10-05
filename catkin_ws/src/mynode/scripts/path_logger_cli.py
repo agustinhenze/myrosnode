@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# Copyright 2017 Agustin Henze <tin@aayy.com.ar>
+
+# Permission is hereby granted, free of charge, to any
+# person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the
+# Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the
+# Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice
+# shall be included in all copies or substantial portions of
+# the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+# KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+# PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+# OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import sys
+import argparse
+import rospy
+from mynode.srv import StartRecording, StopRecording
+
+
+def parse_commandline(args):
+    p = argparse.ArgumentParser(description='Path logger client')
+    p.add_argument('action', help='You can start or stop the recording',
+                   choices=['start', 'stop'], type=str)
+    return p, p.parse_args(args)
+
+
+def main():
+    stop_recording = rospy.ServiceProxy('stop_recording', StopRecording)
+    start_recording = rospy.ServiceProxy('start_recording', StartRecording)
+    _, args = parse_commandline(sys.argv[1:])
+    rospy.wait_for_service('start_recording')
+    rospy.wait_for_service('stop_recording')
+    if args.action == 'start':
+        answer = start_recording()
+        print(answer.state)
+    elif args.action == 'stop':
+        answer = stop_recording()
+        print(answer.state, answer.filename)
+    else:
+        sys.exit('Wrong action')
+
+
+if __name__ == '__main__':
+    main()

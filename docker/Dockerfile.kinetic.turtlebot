@@ -1,0 +1,11 @@
+FROM ros:kinetic-robot
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get install ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi ros-kinetic-rocon-apps ros-kinetic-rocon-tools ros-kinetic-ar-track-alvar-msgs -y && rm -rf /var/lib/apt/
+
+ENV QT_X11_NO_MITSHM 1
+
+RUN sed -i 's@includes/gmapping.launch.xml@includes/gmapping/gmapping.launch.xml@g' /opt/ros/kinetic/share/turtlebot_gazebo/launch/gmapping_demo.launch
+
+RUN sed -i 's@includes/amcl.launch.xml@includes/amcl/amcl.launch.xml@g' /opt/ros/kinetic/share/turtlebot_gazebo/launch/amcl_demo.launch
